@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ko'p o'zgaruvchili funksiyaning differensiali</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+        
+        .presentation {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .slide {
+            width: 90%;
+            max-width: 1200px;
+            height: 85vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 60px;
+            display: none;
+            overflow-y: auto;
+        }
+        
+        .slide.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        .slide h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 20px;
+        }
+        
+        .slide h2 {
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+            font-size: 1.8em;
+        }
+        
+        .slide h3 {
+            color: #555;
+            margin: 20px 0 10px 0;
+            font-size: 1.4em;
+        }
+        
+        .slide p, .slide li {
+            color: #333;
+            line-height: 1.8;
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+        
+        .slide ul, .slide ol {
+            margin-left: 30px;
+        }
+
+        
+        .formula-box {
+            background: #f8f9fa;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            font-size: 1.2em;
+        }
+        
+        .example-box {
+            background: #e8f4f8;
+            border: 2px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.4);
+        }
+        
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .title-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .title-slide h1 {
+            font-size: 3em;
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .title-slide .subtitle {
+            font-size: 1.5em;
+            color: #666;
+            margin: 10px 0;
+        }
+        
+        .title-slide .author {
+            font-size: 1.3em;
+            color: #764ba2;
+            margin: 30px 0 10px 0;
+            font-weight: bold;
+        }
+
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        table th, table td {
+            border: 2px solid #667eea;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px;
+            }
+            .slide h1 {
+                font-size: 1.8em;
+            }
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">15</span>
+        </div>
+
+        <!-- Slayd 1: Muqova -->
+        <div class="slide active title-slide">
+            <h1>KO'P O'ZGARUVCHILI FUNKSIYANING DIFFERENSIALI VA UNING AYRIM TADBIQLARI</h1>
+            <p class="subtitle">60110600 – Matematika va informatika ta'lim yo'nalishi bo'yicha</p>
+            <p class="subtitle">Bakalavr darajasini olish uchun yozilgan</p>
+            <p class="subtitle">BITIRUV MALAKAVIY ISHI</p>
+            <p class="author">Bajardi: Samadov Asliddin Zafarjon o'g'li</p>
+            <p class="subtitle">Ilmiy rahbar: v.b.dots. Majidov Sh. A.</p>
+            <p class="subtitle" style="margin-top: 40px;">NAVOIY DAVLAT UNIVERSITETI</p>
+            <p class="subtitle">Navoiy – 2025</p>
+        </div>
+
+        <!-- Slayd 2: Mundarija -->
+        <div class="slide">
+            <h1>MUNDARIJA</h1>
+            <ol style="font-size: 1.2em; line-height: 2.2;">
+                <li><strong>KIRISH</strong> – Mavzuning dolzarbligi, maqsad va vazifalar</li>
+                <li><strong>I-BOB: Ko'p o'zgaruvchili funksiyaning hosilasi va differensiali</strong>
+                    <ul>
+                        <li>Xususiy hosilalar</li>
+                        <li>Differensiallanuvchilik</li>
+                        <li>To'liq differensial</li>
+                        <li>Yuqori tartibli hosilalar</li>
+                    </ul>
+                </li>
+                <li><strong>II-BOB: Differensialning tadbiqlari</strong>
+                    <ul>
+                        <li>Taqribiy hisoblash</li>
+                        <li>Yo'nalish bo'yicha hosila</li>
+                        <li>Teylor formulasi</li>
+                        <li>Ekstremum masalalari</li>
+                    </ul>
+                </li>
+                <li><strong>XULOSA VA ADABIYOTLAR</strong></li>
+            </ol>
+        </div>
+
+
+
+        <!-- Slayd 3: Mavzuning dolzarbligi -->
+        <div class="slide">
+            <h1>MAVZUNING DOLZARBLIGI</h1>
+            <div class="highlight" style="display: block; margin: 20px 0; padding: 20px;">
+                <p>O'zbekiston Respublikasi Prezidentining 2020-yil 7-mayda qabul qilgan <strong>PQ-4708-sonli qarori</strong> – Matematika sohasidagi ta'lim sifatini oshirish va ilmiy-tadqiqotlarni rivojlantirish</p>
+            </div>
+            
+            <h2>Nima uchun bu mavzu muhim?</h2>
+            <ul>
+                <li>🌍 <strong>Ko'p faktorli muammolar:</strong> Zamonaviy fan va texnikada aksariyat jarayonlar bir nechta omilga bog'liq</li>
+                <li>📊 <strong>Amaliy ahamiyat:</strong> Fizika, iqtisodiyot, muhandislikda keng qo'llaniladi</li>
+                <li>🎯 <strong>Optimallash:</strong> Eng yaxshi yechimlarni topishda asosiy vosita</li>
+                <li>🔬 <strong>Modellashtirish:</strong> Murakkab tizimlarni matematik tilga o'girish</li>
+                <li>💡 <strong>Tahlil qilish:</strong> Ko'p o'lchamli ma'lumotlarni tahlil etish</li>
+            </ul>
+            
+            <div class="example-box">
+                <strong>Amaliy misollar:</strong>
+                <ul>
+                    <li>Harorat taqsimoti fazoda (x, y, z ga bog'liq)</li>
+                    <li>Iqtisodiy ko'rsatkichlar (narx, talab, taklifga bog'liq)</li>
+                    <li>Sirt geometriyasi va 3D modellashtirish</li>
+                </ul>
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 4: Maqsad va vazifalar -->
+        <div class="slide">
+            <h1>TADQIQOT MAQSADI VA VAZIFALARI</h1>
+            
+            <h2>🎯 Asosiy maqsad:</h2>
+            <p>Ko'p o'zgaruvchili funksiyalar differensial hisobining nazariy asoslarini tizimli o'rganish va ushbu matematik apparatni amaliy masalalarni yechishga tatbiq etish ko'nikmalarini shakllantirish</p>
+            
+            <h2>📋 Vazifalar:</h2>
+            <ol>
+                <li><strong>Nazariy tahlil:</strong> Ko'p o'zgaruvchili funksiya, aniqlash sohasi va uzluksizlik tushunchalarini bayon etish</li>
+                <li><strong>Differensiallash:</strong> Xususiy hosilalar va to'la differensialning hisoblash usullarini o'rganish</li>
+                <li><strong>Geometrik ma'nolar:</strong> Funksiya gradienti, yo'nalish bo'yicha hosila, urinma tekislik tenglamalarini o'rganish</li>
+                <li><strong>Taqribiy hisoblash:</strong> Teylor va Makloren formulalarini tatbiq etish</li>
+                <li><strong>Ekstremumlar:</strong> Ko'p o'zgaruvchili funksiyalarning ekstremumlarini topish usullarini o'zlash tirin</li>
+            </ol>
+            
+            <div class="formula-box">
+                <strong>Tadqiqot obyekti:</strong> \( z = f(x_1, x_2, \ldots, x_m) \) – ikki va undan ortiq argumentga bog'liq skalyar funksiyalar
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 5: Xususiy hosilalar -->
+        <div class="slide">
+            <h1>XUSUSIY HOSILALAR</h1>
+            
+            <h2>Ta'rif:</h2>
+            <p>Agar \( f(x, y) \) funksiya \( M_0(x_0, y_0) \) nuqtada ushbu limit:</p>
+            
+            <div class="formula-box">
+                $$\lim_{\Delta x \to 0} \frac{f(x_0 + \Delta x, y_0) - f(x_0, y_0)}{\Delta x}$$
+            </div>
+            
+            <p>mavjud va chekli bo'lsa, bu limit funksiyaning \( M_0 \) nuqtada <span class="highlight">x bo'yicha xususiy hosilasi</span> deb ataladi:</p>
+            
+            <div class="formula-box">
+                $$\frac{\partial f}{\partial x}, \quad f'_x, \quad f_x, \quad \frac{\partial z}{\partial x}$$
+            </div>
+            
+            <h2>Muhim xususiyatlar:</h2>
+            <ul>
+                <li>Xususiy hosila olinganda <strong>boshqa o'zgaruvchilar o'zgarmas</strong> deb olinadi</li>
+                <li>Bir o'zgaruvchili funksiya hosilasi kabi hisoblanadi</li>
+                <li>Har bir o'zgaruvchi bo'yicha alohida hosila topiladi</li>
+            </ul>
+            
+            <div class="example-box">
+                <strong>Misol:</strong> \( z = x^2y + \sin(xy) \)
+                $$\frac{\partial z}{\partial x} = 2xy + y\cos(xy)$$
+                $$\frac{\partial z}{\partial y} = x^2 + x\cos(xy)$$
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 6: Differensiallanuvchilik -->
+        <div class="slide">
+            <h1>DIFFERENSIALLANUVCHILIK</h1>
+            
+            <h2>Ta'rif:</h2>
+            <p>Agar \( f(x, y) \) funksiyaning \( M_0(x_0, y_0) \) nuqtadagi \( \Delta f \) orttirmasi:</p>
+            
+            <div class="formula-box">
+                $$\Delta f = A\Delta x + B\Delta y + o(\rho)$$
+            </div>
+            
+            <p>ko'rinishda ifodalansa, funksiya shu nuqtada <span class="highlight">differensiallanuvchi</span> deyiladi. Bu yerda:</p>
+            <ul>
+                <li>\( A, B \) – \( \Delta x, \Delta y \) ga bog'liq bo'lmagan o'zgarmaslar</li>
+                <li>\( \rho = \sqrt{(\Delta x)^2 + (\Delta y)^2} \)</li>
+                <li>\( o(\rho) \) – \( \rho \to 0 \) da nolga intiluvchi kichik hadlar</li>
+            </ul>
+            
+            <h2>🔑 Zaruriy shart (1-teorema):</h2>
+            <div class="highlight" style="display: block; padding: 15px; margin: 15px 0;">
+                Agar funksiya differensiallanuvchi bo'lsa, u <strong>uzluksiz</strong> bo'ladi
+            </div>
+            
+            <h2>✅ Etarli shart (3-teorema):</h2>
+            <div class="highlight" style="display: block; padding: 15px; margin: 15px 0;">
+                Agar barcha xususiy hosilalar mavjud va <strong>uzluksiz</strong> bo'lsa, funksiya differensiallanuvchi bo'ladi
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 7: To'liq differensial -->
+        <div class="slide">
+            <h1>TO'LIQ DIFFERENSIAL</h1>
+            
+            <h2>Ta'rif:</h2>
+            <p>Funksiya orttirmasining \( \Delta x, \Delta y \) ga nisbatan <span class="highlight">chiziqli bosh qismi</span> funksiyaning to'liq differensiali deb ataladi:</p>
+            
+            <div class="formula-box">
+                $$df = \frac{\partial f}{\partial x}\Delta x + \frac{\partial f}{\partial y}\Delta y$$
+            </div>
+            
+            <p>Yoki qisqacha:</p>
+            
+            <div class="formula-box">
+                $$df = f'_x dx + f'_y dy$$
+            </div>
+            
+            <h2>Xususiy differensiallar:</h2>
+            <div class="formula-box">
+                $$\frac{\partial f}{\partial x}dx = f'_x dx, \quad \frac{\partial f}{\partial y}dy = f'_y dy$$
+            </div>
+            
+            <p>Demak, <strong>to'liq differensial = xususiy differensiallar yig'indisi</strong></p>
+            
+            <div class="example-box">
+                <strong>Misol:</strong> \( z = x^3 + xy^2 \) funksiya uchun \( M(1, 2) \) nuqtada:
+                $$\frac{\partial z}{\partial x} = 3x^2 + y^2 = 3 + 4 = 7$$
+                $$\frac{\partial z}{\partial y} = 2xy = 2 \cdot 1 \cdot 2 = 4$$
+                $$dz = 7dx + 4dy$$
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 8: Yuqori tartibli hosilalar -->
+        <div class="slide">
+            <h1>YUQORI TARTIBLI HOSILALAR</h1>
+            
+            <h2>Ikkinchi tartibli xususiy hosilalar:</h2>
+            <p>Birinchi tartibli xususiy hosilalardan yana hosila olinsa, ikkinchi tartibli hosilalar hosil bo'ladi:</p>
+            
+            <div class="formula-box">
+                $$f''_{xx} = \frac{\partial^2 f}{\partial x^2}, \quad f''_{yy} = \frac{\partial^2 f}{\partial y^2}$$
+                $$f''_{xy} = \frac{\partial^2 f}{\partial x \partial y}, \quad f''_{yx} = \frac{\partial^2 f}{\partial y \partial x}$$
+            </div>
+            
+            <h2>⭐ Shvarts teoremasi (Aralash hosilalar tenglik):</h2>
+            <div class="highlight" style="display: block; padding: 20px; margin: 20px 0;">
+                Agar \( f''_{xy} \) va \( f''_{yx} \) aralash hosilalar uzluksiz bo'lsa:
+                $$f''_{xy} = f''_{yx}$$
+                <p style="margin-top: 10px;"><em>Ya'ni, hosilalar olish tartibi muhim emas!</em></p>
+            </div>
+            
+            <div class="example-box">
+                <strong>Misol:</strong> \( z = x^2y^3 \)
+                $$f'_x = 2xy^3, \quad f'_y = 3x^2y^2$$
+                $$f''_{xy} = 6xy^2, \quad f''_{yx} = 6xy^2$$
+                <p style="color: green; font-weight: bold;">✓ Shvarts teoremasi tasdiqlandi!</p>
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 9: Taqribiy hisoblash -->
+        <div class="slide">
+            <h1>TAQRIBIY HISOBLASHGA TATBIQI</h1>
+            
+            <h2>Asosiy formula:</h2>
+            <p>Funksiyaning to'liq orttirmasini to'liq differensial bilan almashtirish mumkin:</p>
+            
+            <div class="formula-box">
+                $$\Delta f \approx df$$
+                $$f(x, y) \approx f(x_0, y_0) + f'_x(x_0, y_0)(x - x_0) + f'_y(x_0, y_0)(y - y_0)$$
+            </div>
+            
+            <h2>Qo'llanish tartibi:</h2>
+            <ol>
+                <li>Hisoblash kerak bo'lgan kattalikni funksiya ko'rinishida ifodalash</li>
+                <li>Qulaylik uchun \( M_0(x_0, y_0) \) nuqtani tanlash</li>
+                <li>\( f(x_0, y_0) \) ni hisoblash</li>
+                <li>Xususiy hosilalarni topish va \( M_0 \) da hisoblash</li>
+                <li>Formulaga qo'yish</li>
+            </ol>
+            
+            <div class="example-box">
+                <strong>Misol:</strong> \( \arctan\left(\frac{1.98}{1.03} - 1\right) \) ni taqribiy hisoblang
+                <p><strong>Yechim:</strong></p>
+                <p>1) \( f(x,y) = \arctan\left(\frac{x}{y} - 1\right), \quad x = 1.98, y = 1.03 \)</p>
+                <p>2) \( x_0 = 2, y_0 = 1 \) deb olamiz</p>
+                <p>3) \( f(2, 1) = \arctan(1) = \frac{\pi}{4} = 0.785 \)</p>
+                <p>4) \( f'_x(2,1) = 0.5, \quad f'_y(2,1) = -1 \)</p>
+                <p>5) \( f(1.98, 1.03) \approx 0.785 + 0.5(-0.02) - 1(0.03) = 0.745 \)</p>
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 10: Yo'nalish bo'yicha hosila -->
+        <div class="slide">
+            <h1>YO'NALISH BO'YICHA HOSILA</h1>
+            
+            <h2>Ta'rif:</h2>
+            <p>Funksiyaning ixtiyoriy \( \vec{l} \) yo'nalish bo'yicha o'zgarish tezligi:</p>
+            
+            <div class="formula-box">
+                $$\frac{\partial f}{\partial \vec{l}} = \lim_{\rho \to 0} \frac{f(M) - f(M_0)}{\rho}$$
+            </div>
+            
+            <h2>Hisoblash formulasi:</h2>
+            <div class="formula-box">
+                $$\frac{\partial f}{\partial \vec{l}} = f'_x \cos\alpha + f'_y \cos\beta$$
+            </div>
+            
+            <p>Bu yerda \( \cos\alpha, \cos\beta \) – yo'naltiruvchi kosinuslar</p>
+            
+            <h2>⭐ Gradient:</h2>
+            <div class="highlight" style="display: block; padding: 20px; margin: 15px 0;">
+                $$\text{grad} f = \nabla f = \left(\frac{\partial f}{\partial x}, \frac{\partial f}{\partial y}\right)$$
+                <p style="margin-top: 10px;">Gradient – funksiyaning <strong>eng tez o'sish yo'nalishi</strong>!</p>
+            </div>
+            
+            <div class="example-box">
+                <strong>Fizik ma'no:</strong>
+                <ul>
+                    <li>Harorat maydoni uchun – issiqlik oqimi yo'nalishi</li>
+                    <li>Bosim maydoni uchun – shamol yo'nalishi</li>
+                    <li>Balandlik maydoni uchun – eng tik ko'tarilish yo'nalishi</li>
+                </ul>
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 11: Teylor formulasi -->
+        <div class="slide">
+            <h1>TEYLOR FORMULASI</h1>
+            
+            <h2>Ko'p o'zgaruvchili funksiya uchun:</h2>
+            <div class="formula-box">
+                $$f(x, y) = f(x_0, y_0) + df(x_0, y_0) + \frac{1}{2!}d^2f(x_0, y_0) + \ldots + \frac{1}{n!}d^nf(\xi, \eta)$$
+            </div>
+            
+            <p>Bu yerda:</p>
+            <ul>
+                <li>\( df \) – birinchi tartibli differensial</li>
+                <li>\( d^2f \) – ikkinchi tartibli differensial</li>
+                <li>\( (\xi, \eta) \) – \( M_0 \) va \( M \) orasidagi nuqta</li>
+            </ul>
+            
+            <h2>Ikkinchi tartibli yoyilma:</h2>
+            <div class="formula-box">
+                $$f(x, y) \approx f(x_0, y_0) + f'_x\Delta x + f'_y\Delta y +$$
+                $$+ \frac{1}{2}(f''_{xx}\Delta x^2 + 2f''_{xy}\Delta x\Delta y + f''_{yy}\Delta y^2)$$
+            </div>
+            
+            <div class="example-box">
+                <strong>Ahamiyati:</strong>
+                <ul>
+                    <li>Murakkab funksiyalarni ko'phad bilan almashtirish</li>
+                    <li>Hisoblashlarni soddalashtirish</li>
+                    <li>Xatolarni baholash</li>
+                </ul>
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 12: Ekstremum - 1 -->
+        <div class="slide">
+            <h1>EKSTREMUM MASALALARI (1-qism)</h1>
+            
+            <h2>Ta'riflar:</h2>
+            <div class="formula-box">
+                <p><strong>Maksimum:</strong> Agar \( M_0 \) ning atrofida \( f(M) < f(M_0) \) bo'lsa</p>
+                <p><strong>Minimum:</strong> Agar \( M_0 \) ning atrofida \( f(M) > f(M_0) \) bo'lsa</p>
+            </div>
+            
+            <h2>🔑 Zaruriy shart (Ferma teoremasi):</h2>
+            <div class="highlight" style="display: block; padding: 20px; margin: 15px 0;">
+                Agar funksiya \( M_0 \) nuqtada ekstremumga erishsa va xususiy hosilalar mavjud bo'lsa:
+                $$f'_x(M_0) = 0, \quad f'_y(M_0) = 0$$
+            </div>
+            
+            <p><strong>Statsionar nuqtalar</strong> – xususiy hosilalarni nolga aylantiradigan nuqtalar</p>
+            
+            <div class="example-box">
+                <strong>Misol:</strong> \( z = x^2 + y^2 - 4x - 6y + 5 \)
+                <p>Statsionar nuqtalarni topamiz:</p>
+                $$f'_x = 2x - 4 = 0 \Rightarrow x = 2$$
+                $$f'_y = 2y - 6 = 0 \Rightarrow y = 3$$
+                <p>Statsionar nuqta: \( M_0(2, 3) \)</p>
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 13: Ekstremum - 2 -->
+        <div class="slide">
+            <h1>EKSTREMUM MASALALARI (2-qism)</h1>
+            
+            <h2>✅ Etarli shart (Silvestr alomati):</h2>
+            <p>Statsionar nuqtada ikkinchi tartibli hosilalardan:</p>
+            <div class="formula-box">
+                $$A = f''_{xx}, \quad B = f''_{xy}, \quad C = f''_{yy}$$
+                $$\Delta = AC - B^2$$
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Shart</th>
+                        <th>Natija</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>\( \Delta > 0 \) va \( A > 0 \)</td>
+                        <td style="background: #d4edda; color: #155724; font-weight: bold;">✓ MINIMUM</td>
+                    </tr>
+                    <tr>
+                        <td>\( \Delta > 0 \) va \( A < 0 \)</td>
+                        <td style="background: #d4edda; color: #155724; font-weight: bold;">✓ MAKSIMUM</td>
+                    </tr>
+                    <tr>
+                        <td>\( \Delta < 0 \)</td>
+                        <td style="background: #f8d7da; color: #721c24; font-weight: bold;">✗ EKSTREMUM YO'Q</td>
+                    </tr>
+                    <tr>
+                        <td>\( \Delta = 0 \)</td>
+                        <td style="background: #fff3cd; color: #856404; font-weight: bold;">? SHUBHALI</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <!-- Slayd 14: Amaliy tatbiqlar -->
+        <div class="slide">
+            <h1>AMALIY TATBIQLAR</h1>
+            
+            <h2>1️⃣ Fizikada:</h2>
+            <ul>
+                <li>🌡️ Harorat taqsimoti: \( T(x, y, z) \) – fazoda harorat maydoni</li>
+                <li>⚡ Elektr maydoni: Potensial va kuch chiziqlari</li>
+                <li>💨 Suyuqlik oqimi: Tezlik maydoni tahlili</li>
+            </ul>
+            
+            <h2>2️⃣ Iqtisodiyotda:</h2>
+            <ul>
+                <li>📈 Foyda funksiyasi: \( P(x, y) \) – ikki mahsulot ishlab chiqarishda foydani maksimallashtirish</li>
+                <li>💰 Xarajatlarni minimallashtirish</li>
+                <li>📊 Elastiklik koeffitsientlari</li>
+            </ul>
+            
+            <h2>3️⃣ Muhandislikda:</h2>
+            <ul>
+                <li>🏗️ Konstruksiyalarni optimallashtirish</li>
+                <li>🎨 3D modellashtirish va kompyuter grafikasi</li>
+                <li>🤖 Sun'iy intellekt va ma'lumotlar tahlili (Machine Learning)</li>
+            </ul>
+            
+            <h2>4️⃣ Eng kichik kvadratlar usuli:</h2>
+            <p>Tajribaviy ma'lumotlar asosida empirik formulalar topish</p>
+            <div class="formula-box">
+                $$S(a, b) = \sum_{i=1}^{n} [y_i - \varphi(x_i, a, b)]^2 \to \min$$
+            </div>
+        </div>
+
+
+
+        <!-- Slayd 15: Xulosa -->
+        <div class="slide">
+            <h1>XULOSA</h1>
+            
+            <div class="two-column">
+                <div>
+                    <h2>📚 Nazariy natijalar:</h2>
+                    <ul>
+                        <li>Ko'p o'zgaruvchili funksiyalar differensial hisobining fundamental tushunchalari o'rganildi</li>
+                        <li>Xususiy hosila va to'liq differensial orasidagi bog'liqlik aniqlandi</li>
+                        <li>Gradient va yo'nalish bo'yicha hosilaning ahamiyati ko'rsatildi</li>
+                        <li>Ekstremum topish usullari mukammal o'zlashtirildi</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h2>🎯 Amaliy natijalar:</h2>
+                    <ul>
+                        <li>Taqribiy hisoblash usullari o'rganildi</li>
+                        <li>Optimallashtirish masalalarini yechish ko'nikmalari shakllandi</li>
+                        <li>Real muammolarni matematik modellashtirish imkoniyati yaratildi</li>
+                        <li>Zamonaviy ilmiy tadqiqotlar uchun asos yaratildi</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="highlight" style="display: block; padding: 20px; margin: 30px 0; text-align: center;">
+                <h2 style="color: #667eea; margin-bottom: 15px;">💡 Asosiy xulosa</h2>
+                <p style="font-size: 1.2em;">Ko'p o'zgaruvchili funksiyalar differensial hisobi – bu real dunyodagi ko'p omilli jarayonlarni matematik tilga o'girish, tahlil qilish va optimal yechimlar topish uchun kuchli va universal vositadir!</p>
+            </div>
+            
+            <p style="text-align: center; font-size: 1.3em; margin-top: 30px; color: #764ba2; font-weight: bold;">E'TIBORINGIZ UCHUN RAHMAT! 🎓</p>
+        </div>
+
+    </div>
+
+
+
+    <div class="controls">
+        <button class="btn" onclick="prevSlide()">⬅️ Oldingi</button>
+        <button class="btn" onclick="nextSlide()">Keyingi ➡️</button>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = document.querySelectorAll('.slide').length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            const slides = document.querySelectorAll('.slide');
+            
+            if (n > totalSlides) {
+                currentSlide = totalSlides;
+            }
+            if (n < 1) {
+                currentSlide = 1;
+            }
+            
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            slides[currentSlide - 1].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide;
+        }
+        
+        function nextSlide() {
+            currentSlide++;
+            if (currentSlide > totalSlides) {
+                currentSlide = totalSlides;
+            }
+            showSlide(currentSlide);
+        }
+        
+        function prevSlide() {
+            currentSlide--;
+            if (currentSlide < 1) {
+                currentSlide = 1;
+            }
+            showSlide(currentSlide);
+        }
+
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' || event.key === ' ') {
+                nextSlide();
+            } else if (event.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (event.key === 'Home') {
+                currentSlide = 1;
+                showSlide(currentSlide);
+            } else if (event.key === 'End') {
+                currentSlide = totalSlides;
+                showSlide(currentSlide);
+            }
+        });
+        
+        // Touch swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', function(event) {
+            touchStartX = event.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', function(event) {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                nextSlide();
+            }
+            if (touchEndX > touchStartX + 50) {
+                prevSlide();
+            }
+        }
+        
+        // Initialize
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
